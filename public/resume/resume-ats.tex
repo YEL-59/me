@@ -1,0 +1,134 @@
+%-------------------------
+% Resume in LaTeX
+% Author: Md. Tofayel Islam
+% Website: https://github.com/YEL-59/Resumelatex
+% License: MIT
+%------------------------
+
+\documentclass[a4paper,10.5pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{fontawesome}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{\scshape\raggedright\normalsize}{}{0em}{}[\color{black}\titlerule]
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+
+\newcommand{\resumeItem}[1]{\item\small{#1}}
+\newcommand{\resumeSubheading}[4]{
+  \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}
+}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,itemsep=2pt]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=*,itemsep=1pt]}
+\newcommand{\resumeItemListEnd}{\end{itemize}}
+\newcommand{\resumeProjectHeading}[2]{\item \textbf{#1} \hfill {#2}}
+
+\begin{document}
+
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\href{https://tofayel.vercel.app/}{\Large Md. Tofayel Islam}} & \href{mailto:tofayeltuhin143@gmail.com}{tofayeltuhin143@gmail.com} \\
+  \href{https://tofayel.vercel.app/}{tofayel.vercel.app} & +8801708901418 \\
+  \href{https://github.com/YEL-59}{github.com/YEL-59}
+\end{tabular*}
+
+\section{Summary}
+\resumeSubHeadingListStart
+  \item{Frontend Developer with 2+ years of experience in building scalable web applications using \textbf{React, Next.js, TypeScript, Redux, Tailwind CSS, ShadCN UI}.}
+  \item{Strong background in \textbf{state management, API integration, and responsive design}.}
+  \item{Hands-on experience with \textbf{AI-powered projects} including resume generation, cover letter writing, and goal tracking platforms.}
+\resumeSubHeadingListEnd
+
+\section{Education}
+\resumeSubHeadingListStart
+  \resumeSubheading
+      {Daffodil International University}{Savar, Dhaka}
+      {B.Sc. in Computer Science and Engineering}{Aug 2018 – Jul 2023}
+\resumeSubHeadingListEnd
+
+\section{Experience}
+\resumeSubHeadingListStart
+  \resumeSubheading
+      {Frontend Developer – Softvence}{Dhaka, Bangladesh}
+      {React Developer (Full-Time)}{Nov 2024 – Present}
+      \resumeItemListStart
+        \resumeItem{Developed and maintained scalable React applications using modern frontend tools.}
+        \resumeItem{Collaborated with backend and design teams to deliver responsive user interfaces.}
+        \resumeItem{Integrated APIs and implemented global state management with Redux Toolkit and React Query.}
+      \resumeItemListEnd
+
+  \resumeSubheading
+      {Frontend Developer – Amromed LLC}{Dhaka, Bangladesh}
+      {React Developer (Full-Time)}{Apr 2023 – Sep 2024}
+      \resumeItemListStart
+        \resumeItem{Delivered production-grade React applications ensuring performance and scalability.}
+        \resumeItem{Built reusable components and optimized frontend workflows.}
+        \resumeItem{Integrated REST APIs and applied TypeScript for type safety.}
+      \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+\section{Projects}
+\resumeSubHeadingListStart
+
+\resumeProjectHeading
+    {\href{https://karially.com}{Karially.com \faExternalLink}}{React, Next.js, TypeScript, Tailwind, ShadCN, Node.js, AI APIs}
+    \resumeItemListStart
+      \resumeItem{AI-powered platform for Resume \& Cover Letter generation, and Career Goal Tracking.}
+      \resumeItem{Modern dashboard with personalized AI recommendations.}
+      \resumeItem{Implemented authentication, persistence, and secure API integration.}
+    \resumeItemListEnd
+
+\resumeProjectHeading
+    {\href{https://studentia.vercel.app}{StudentIA \faExternalLink}}{React, Chart.js, Tailwind CSS}
+    \resumeItemListStart
+      \resumeItem{Dynamic admin dashboard with real-time data visualization and CRUD support.}
+      \resumeItem{Responsive modular layout using Tailwind CSS.}
+    \resumeItemListEnd
+
+\resumeProjectHeading
+    {\href{https://primeholiday.vercel.app}{Primeholiday \faExternalLink}}{React, Tailwind CSS, React Query, Node.js}
+    \resumeItemListStart
+      \resumeItem{Platform to explore, create, and manage holiday packages.}
+      \resumeItem{Optimized server state management with React Query.}
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \item{\textbf{Languages:} JavaScript (ES6+), TypeScript, HTML5, CSS3, SQL}
+  \item{\textbf{Frameworks \& Libraries:} React, Next.js, Redux, Tailwind CSS, ShadCN UI}
+  \item{\textbf{Tools \& Platforms:} Git, GitHub, Vite, Webpack, Figma, VS Code}
+  \item{\textbf{Other:} REST APIs, Responsive Design, React Query, React Hook Form, Zod}
+\resumeSubHeadingListEnd
+
+\section{Programming Profiles}
+\resumeSubHeadingListStart
+  \item{\href{https://leetcode.com/YEL-59/}{\textbf{LeetCode:} leetcode.com/YEL-59}}
+  \item{\href{https://www.hackerrank.com/YEL_59?hr_r=1}{\textbf{HackerRank:} hackerrank.com/YEL\_59}}
+  \item{\href{https://www.beecrowd.com.br/judge/en/profile/306160}{\textbf{Beecrowd (URI):} beecrowd.com.br/judge/en/profile/306160}}
+\resumeSubHeadingListEnd
+
+\end{document}
