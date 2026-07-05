@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import CursorSpark from "@/components/CursorSpark";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
@@ -28,7 +29,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full font-sans">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <CursorSpark />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
