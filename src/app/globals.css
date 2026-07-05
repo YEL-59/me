@@ -14,6 +14,11 @@
   --pill-border: #2a2d35;
   --pill-inner: #0c0e12;
   --dot-inactive: #333;
+  --map-dot: #2a2e38;
+  --map-dot-region: #5b4b8a;
+  --map-dot-hover: #a78bfa;
+  --map-tooltip-bg: rgba(12, 14, 18, 0.88);
+  --map-tooltip-border: rgba(139, 92, 246, 0.35);
   --code-comment: #555;
   --code-text: #c8ccd4;
   --scrollbar: #333;
@@ -33,6 +38,11 @@ html.light {
   --pill-border: #dde0e6;
   --pill-inner: #ffffff;
   --dot-inactive: #cdd1d8;
+  --map-dot: #c5c9d2;
+  --map-dot-region: #8b7ec8;
+  --map-dot-hover: #7c3aed;
+  --map-tooltip-bg: rgba(255, 255, 255, 0.92);
+  --map-tooltip-border: rgba(124, 58, 237, 0.25);
   --code-comment: #9ca3af;
   --code-text: #374151;
   --scrollbar: #cdd1d8;
@@ -62,7 +72,573 @@ body {
 }
 
 .card {
+  position: relative;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  z-index: 0;
+  background: radial-gradient(
+    320px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgba(139, 92, 246, 0.24),
+    rgba(34, 211, 238, 0.1) 42%,
+    transparent 72%
+  );
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  z-index: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(34, 211, 238, 0.06) 100%
+  );
+}
+
+.card:hover {
+  border-color: rgba(139, 92, 246, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.1),
+    0 10px 36px rgba(139, 92, 246, 0.14),
+    0 0 56px rgba(34, 211, 238, 0.07);
+}
+
+.card:hover::before,
+.card:hover::after {
+  opacity: 1;
+}
+
+.bento-card-shell {
+  --glow-x: 50%;
+  --glow-y: 50%;
+}
+
+.cursor-spark-core {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(237, 233, 254, 0.95) 0%,
+    rgba(139, 92, 246, 0.7) 35%,
+    transparent 72%
+  );
+  box-shadow:
+    0 0 10px rgba(139, 92, 246, 0.9),
+    0 0 18px rgba(34, 211, 238, 0.45),
+    0 0 4px rgba(255, 255, 255, 0.8);
+  animation: cursor-spark-pulse 1.6s ease-in-out infinite;
+}
+
+.cursor-spark-core::before,
+.cursor-spark-core::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(196, 181, 253, 0.9),
+    transparent
+  );
+  transform-origin: center center;
+}
+
+.cursor-spark-core::before {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.cursor-spark-core::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.cursor-spark {
+  position: fixed;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: cursor-spark-fly 0.55s ease-out forwards;
+}
+
+@keyframes cursor-spark-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes cursor-spark-fly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateX(0)
+      scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateX(22px)
+      scale(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-spark-layer {
+    display: none;
+  }
+}
+
+.vault-page {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.vault-card {
+  background: var(--bg-primary);
+  border-color: var(--border);
+}
+
+.vault-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.vault-stamp {
+  animation: vault-stamp-in 0.6s ease-out 0.4s both;
+}
+
+@keyframes vault-stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.4) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-2deg);
+  }
+}
+
+.vault-marquee-track {
+  animation: vault-marquee 22s linear infinite;
+  width: max-content;
+}
+
+@keyframes vault-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Paradox Engine / Password Oracle ── */
+
+.oracle-panel {
+  background: var(--bg-primary);
+  animation: oracle-enter 0.35s ease-out;
+}
+
+@keyframes oracle-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.oracle-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(139, 92, 246, 0.03) 2px,
+    rgba(139, 92, 246, 0.03) 4px
+  );
+  animation: oracle-scan 8s linear infinite;
+}
+
+@keyframes oracle-scan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 40px;
+  }
+}
+
+.oracle-aurora {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.12), transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(239, 68, 68, 0.08), transparent 45%);
+  animation: oracle-aurora 6s ease-in-out infinite alternate;
+}
+
+@keyframes oracle-aurora {
+  from {
+    opacity: 0.6;
+    filter: hue-rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    filter: hue-rotate(20deg);
+  }
+}
+
+.oracle-entropy {
+  background: linear-gradient(90deg, #7c3aed, #ef4444, #f59e0b);
+  background-size: 200% 100%;
+  animation: oracle-entropy-flow 2s linear infinite;
+}
+
+@keyframes oracle-entropy-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.oracle-reel {
+  animation: oracle-reel-shake 0.09s linear infinite;
+}
+
+@keyframes oracle-reel-shake {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.oracle-planchette {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid rgba(167, 139, 250, 0.85);
+  filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.6));
+}
+
+.oracle-quantum span {
+  animation: oracle-bit-flicker 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes oracle-bit-flicker {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.oracle-prophecy {
+  animation: oracle-scroll-in 1.6s ease-out;
+}
+
+@keyframes oracle-scroll-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.oracle-output {
+  text-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
+  animation: oracle-output-reveal 0.5s ease-out;
+}
+
+@keyframes oracle-output-reveal {
+  from {
+    opacity: 0;
+    letter-spacing: 0.2em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: normal;
+  }
+}
+
+.oracle-glitch {
+  animation: oracle-glitch-shake 0.15s linear 3;
+}
+
+@keyframes oracle-glitch-shake {
+  0% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-2px, 1px);
+  }
+  50% {
+    transform: translate(2px, -1px);
+  }
+  75% {
+    transform: translate(-1px, -1px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.oracle-glitch-text {
+  animation: oracle-glitch-flash 0.6s ease-out;
+}
+
+@keyframes oracle-glitch-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+}
+
+.oracle-orb {
+  animation: oracle-orb-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.7);
+}
+
+@keyframes oracle-orb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+.oracle-trigger:hover .oracle-orb {
+  animation-duration: 0.6s;
+}
+
+.oracle-summon:hover .oracle-orb {
+  box-shadow: 0 0 16px rgba(139, 92, 246, 1);
+}
+
+.vault-help-btn {
+  animation: vault-help-glow 3s ease-in-out infinite;
+}
+
+@keyframes vault-help-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
+  }
+}
+
+.vault-help-popup {
+  backdrop-filter: blur(12px);
+}
+
+.vault-help-overlay {
+  background: var(--bg-primary);
+  animation: oracle-enter 0.3s ease-out;
+}
+
+.vault-help-aurora {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(139, 92, 246, 0.15), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(239, 68, 68, 0.08), transparent 50%);
+}
+
+.vault-help-step {
+  animation: vault-help-step-in 0.4s ease-out both;
+}
+
+.vault-help-step:nth-child(1) { animation-delay: 0.05s; }
+.vault-help-step:nth-child(2) { animation-delay: 0.1s; }
+.vault-help-step:nth-child(3) { animation-delay: 0.15s; }
+.vault-help-step:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes vault-help-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Open Source Lab ── */
+
+.os-grid-bg {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+.os-glow {
+  animation: os-glow-drift 8s ease-in-out infinite alternate;
+}
+
+@keyframes os-glow-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(20px, -10px) scale(1.1); }
+}
+
+.os-comp-card {
+  animation: os-card-in 0.5s ease-out both;
+}
+
+@keyframes os-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.os-folder-btn:hover .absolute.top-3 {
+  transform: rotate(-8deg) translateY(-2px);
+}
+
+.os-marquee-track {
+  animation: vault-marquee 28s linear infinite;
+  width: max-content;
+}
+
+/* ── Projects stream ── */
+
+.proj-mesh {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(34, 211, 238, 0.08), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08), transparent 40%),
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+  opacity: 0.5;
+}
+
+.proj-card {
+  animation: proj-card-in 0.6s ease-out both;
+}
+
+@keyframes proj-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.proj-pulse-dot {
+  animation: proj-pulse 1s ease-in-out infinite;
+}
+
+@keyframes proj-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* ── Bento ambient strip ── */
+
+.bento-ambient-shimmer {
+  background:
+    linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(139, 92, 246, 0.06) 50%,
+      transparent 60%
+    );
+  background-size: 200% 100%;
+  animation: bento-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes bento-shimmer {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -200% 0;
+  }
+}
+
+.bento-marquee-left {
+  animation: bento-marquee-left 32s linear infinite;
+}
+
+.bento-marquee-right {
+  animation: bento-marquee-right 38s linear infinite;
+}
+
+@keyframes bento-marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes bento-marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
