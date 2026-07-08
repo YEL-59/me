@@ -87,6 +87,64 @@ export default function AboutPage() {
         className="mt-8 rounded-2xl border p-5"
         style={{ background: "var(--bg-primary)", borderColor: "var(--border)" }}
       >
+        <p className="text-[10px] font-bold tracking-[0.2em] text-emerald-400 uppercase">
+          People who matter
+        </p>
+        <h2 className="mt-2 text-sm font-semibold">My best friend — Miskat Showmik</h2>
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div className="relative mx-auto shrink-0 sm:mx-0">
+            <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/20 blur-md" />
+            <Image
+              src="https://avatars.githubusercontent.com/u/77013640?v=4"
+              alt="Miskat Showmik"
+              width={88}
+              height={88}
+              className="relative rounded-full border-2 object-cover"
+              style={{ borderColor: "var(--border)" }}
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Behind every good build is someone who tells you the truth. For me,
+              that&apos;s <strong style={{ color: "var(--text-primary)" }}>Miskat Showmik</strong>{" "}
+              — my best friend and one of the sharpest developers I know. We&apos;ve
+              grown up in the same Dhaka dev scene, swapped ideas over countless
+              late nights, and pushed each other from student projects to real
+              software.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Miskat is a software developer focused on{" "}
+              <span className="text-emerald-400">Python</span>,{" "}
+              <span className="text-emerald-400">machine learning</span>, and clean
+              engineering. He ships open source on GitHub, experiments with AI
+              frameworks, and never lets me settle for &quot;good enough&quot; UI.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                { label: "GitHub", href: "https://github.com/Miskat-UL" },
+                { label: "Portfolio", href: "http://dev.miskatbyte.xyz/" },
+                { label: "Email", href: "mailto:miskatshowmik@gmail.com" },
+              ].map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg border px-3 py-1.5 text-[11px] transition-colors hover:border-emerald-500/40 hover:text-emerald-400"
+                  style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="mt-8 rounded-2xl border p-5"
+        style={{ background: "var(--bg-primary)", borderColor: "var(--border)" }}
+      >
         <h2 className="text-sm font-semibold">How I think about code</h2>
         <ul className="mt-4 space-y-3">
           {philosophies.map((p) => (
