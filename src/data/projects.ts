@@ -13,7 +13,7 @@ export type Project = {
   category: "ai" | "dashboard" | "portfolio" | "tool" | "platform";
 };
 
-export const projects: Project[] = [
+export const curatedProjects: Project[] = [
   {
     slug: "karially",
     title: "Karially.com",
@@ -45,6 +45,7 @@ export const projects: Project[] = [
     ],
     stack: ["React", "Chart.js", "Tailwind CSS"],
     href: "https://studentia.vercel.app",
+    github: "https://github.com/YEL-59/studentia",
     status: "live",
     accent: "#22d3ee",
     emoji: "📊",
@@ -63,6 +64,7 @@ export const projects: Project[] = [
     ],
     stack: ["React", "Tailwind CSS", "React Query", "Node.js"],
     href: "https://primeholiday.vercel.app",
+    github: "https://github.com/YEL-59/primeholiday",
     status: "live",
     accent: "#34d399",
     emoji: "✈️",
@@ -80,6 +82,8 @@ export const projects: Project[] = [
       "Interactive dotted world map",
     ],
     stack: ["Next.js", "TypeScript", "Tailwind", "Matter.js"],
+    href: "https://me-lilac-three.vercel.app",
+    github: "https://github.com/YEL-59/me",
     status: "live",
     accent: "#f472b6",
     emoji: "🎨",
@@ -132,6 +136,7 @@ export const projects: Project[] = [
       "REST API integration",
     ],
     stack: ["React", "JavaScript", "CSS"],
+    href: "https://linkedinclonev1.netlify.app/",
     github: "https://github.com/YEL-59/linkend_clone",
     status: "archived",
     accent: "#0ea5e9",
@@ -151,10 +156,47 @@ export const projects: Project[] = [
     ],
     stack: ["Next.js", "TypeScript", "Tailwind"],
     href: "https://tofayel.vercel.app",
+    github: "https://github.com/YEL-59/tofayel",
     status: "live",
     accent: "#fbbf24",
     emoji: "⚡",
     category: "portfolio",
+  },
+  {
+    slug: "figtail",
+    title: "Figtail",
+    year: "2025",
+    description:
+      "Tailwind CSS design system with reusable UI patterns and component recipes.",
+    highlights: [
+      "Design system documentation",
+      "Reusable Tailwind patterns",
+      "Open source component library",
+    ],
+    stack: ["JavaScript", "Tailwind CSS", "React"],
+    href: "https://figtail.vercel.app",
+    github: "https://github.com/YEL-59/figtail",
+    status: "live",
+    accent: "#2dd4bf",
+    emoji: "🎨",
+    category: "tool",
+  },
+  {
+    slug: "react-cool-toast",
+    title: "React Cool Toast",
+    year: "2025",
+    description: "Lightweight toast notification component for React apps.",
+    highlights: [
+      "TypeScript-first API",
+      "Customizable animations",
+      "Open source npm-ready component",
+    ],
+    stack: ["React", "TypeScript"],
+    github: "https://github.com/YEL-59/react-cool-toast",
+    status: "live",
+    accent: "#f87171",
+    emoji: "🔔",
+    category: "tool",
   },
 ];
 
@@ -164,12 +206,16 @@ export const projectFilters = [
   { id: "ai", label: "AI" },
   { id: "dashboard", label: "Dashboard" },
   { id: "portfolio", label: "Portfolio" },
+  { id: "tool", label: "Open Source" },
   { id: "archived", label: "Archived" },
 ] as const;
 
 export type ProjectFilterId = (typeof projectFilters)[number]["id"];
 
-export function filterProjects(filter: ProjectFilterId): Project[] {
+export function filterProjects(
+  projects: Project[],
+  filter: ProjectFilterId
+): Project[] {
   if (filter === "all") return projects;
   if (filter === "live") return projects.filter((p) => p.status === "live");
   if (filter === "archived") return projects.filter((p) => p.status === "archived");

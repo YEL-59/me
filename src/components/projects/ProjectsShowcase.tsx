@@ -4,14 +4,16 @@ import Link from "next/link";
 import {
   filterProjects,
   projectFilters,
-  projects,
   type Project,
   type ProjectFilterId,
 } from "@/data/projects";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const BATCH_SIZE = 4;
-const MAX_WAVES = 6;
+const BATCH_SIZE = 8;
+
+type ProjectsShowcaseProps = {
+  projects: Project[];
+};
 
 function ProjectCard({
   project,
@@ -124,16 +126,26 @@ function ProjectCard({
               </svg>
             </Link>
           )}
-          {project.github && (
+          {project.github ? (
             <Link
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border px-3.5 py-2 text-[11px] transition-colors hover:text-violet-400"
+              className="inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[11px] transition-colors hover:text-violet-400"
               style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
             >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-1.005-.54-2.04-.185-2.04.435 0 .855.78 1.215 1.395 1.875 1.26 1.335 3.27.945 4.065.72.12-.555.48-1.005.87-1.23-3.015-.345-6.18-1.515-6.18-6.735 0-1.485.525-2.7 1.395-3.645-.135-.33-.6-1.68.135-3.495 0 0 1.14-.345 3.75 1.395 1.08-.3 2.25-.45 3.405-.45 1.155 0 2.325.15 3.405.45 2.61-1.74 3.75-1.395 3.75-1.395.735 1.815.27 3.165.135 3.495.87.945 1.395 2.16 1.395 3.645 0 5.235-3.18 6.39-6.21 6.72.495.42.93 1.245.93 2.505 0 1.815-.015 3.27-.015 3.72 0 .33.225.69.84.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+              </svg>
               GitHub
             </Link>
+          ) : (
+            <span
+              className="rounded-lg border px-3.5 py-2 text-[11px]"
+              style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
+            >
+              Private / NDA
+            </span>
           )}
         </div>
       </div>
@@ -160,33 +172,29 @@ function LoadingPulse() {
   );
 }
 
-export default function ProjectsShowcase() {
+export default function ProjectsShowcase({ projects }: ProjectsShowcaseProps) {
   const [filter, setFilter] = useState<ProjectFilterId>("all");
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const filtered = useMemo(() => filterProjects(filter), [filter]);
-  const maxItems = filtered.length * MAX_WAVES;
+  const filtered = useMemo(
+    () => filterProjects(projects, filter),
+    [projects, filter]
+  );
+  const maxItems = filtered.length;
 
   const displayProjects = useMemo(() => {
-    const items: { project: Project; wave: number; key: string }[] = [];
-    let i = 0;
-    while (items.length < visibleCount && items.length < maxItems) {
-      const project = filtered[i % filtered.length];
-      const wave = Math.floor(i / filtered.length);
-      items.push({
-        project,
-        wave,
-        key: `${project.slug}-w${wave}-${i}`,
-      });
-      i++;
-    }
-    return items;
-  }, [filtered, visibleCount, maxItems]);
+    return filtered.slice(0, visibleCount).map((project, index) => ({
+      project,
+      wave: 0,
+      key: `${project.slug}-${index}`,
+    }));
+  }, [filtered, visibleCount]);
 
   const hasMore = visibleCount < maxItems;
+  const githubCount = projects.filter((project) => project.github).length;
 
   const loadMore = useCallback(() => {
     if (!hasMore || loading) return;
@@ -256,7 +264,16 @@ export default function ProjectsShowcase() {
               className="mt-3 max-w-md text-sm leading-relaxed"
               style={{ color: "var(--text-secondary)" }}
             >
-              Scroll to explore — AI tools, dashboards, and production apps.
+              Synced from{" "}
+              <a
+                href="https://github.com/YEL-59"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                github.com/YEL-59
+              </a>
+              — scroll to explore AI tools, dashboards, client work, and open source repos.
             </p>
           </div>
 
@@ -268,6 +285,15 @@ export default function ProjectsShowcase() {
               <p className="text-xl font-bold tabular-nums text-cyan-400">{projects.length}</p>
               <p className="text-[9px] uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
                 Total
+              </p>
+            </div>
+            <div
+              className="rounded-xl border px-5 py-3"
+              style={{ borderColor: "var(--border)", background: "var(--bg-primary)" }}
+            >
+              <p className="text-xl font-bold tabular-nums text-violet-400">{githubCount}</p>
+              <p className="text-[9px] uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>
+                GitHub
               </p>
             </div>
             <div
