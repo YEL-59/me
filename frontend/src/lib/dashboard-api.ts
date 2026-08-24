@@ -48,6 +48,27 @@ export async function api<T = unknown>(
   return json.data as T;
 }
 
+export async function uploadFile(file: File): Promise<{ url: string; filename: string; originalName: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_URL}/upload`, {
+    method: "POST",
+    headers: {
+      "x-dashboard-key": getDashboardKey(),
+    },
+    body: formData,
+  });
+
+  const json = await res.json();
+  if (!res.ok || json.success === false) {
+    throw new Error(json.message || "Upload failed");
+  }
+  return json.data;
+}
+
+
+
 export const SECTIONS = [
   { id: "profile", label: "Profile", kind: "singleton", path: "/profile" },
   { id: "about", label: "About", kind: "singleton", path: "/about" },

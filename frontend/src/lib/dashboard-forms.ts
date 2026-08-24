@@ -10,7 +10,8 @@ export type FieldType =
   | "select"
   | "stringList"
   | "objectList"
-  | "icon";
+  | "icon"
+  | "file";
 
 export type FieldDef = {
   key: string;
@@ -27,7 +28,7 @@ export const FORM_FIELDS: Partial<Record<SectionId, FieldDef[]>> = {
     { key: "shortName", label: "Short name", type: "text" },
     { key: "handle", label: "Handle", type: "text" },
     { key: "role", label: "Role", type: "text" },
-    { key: "avatarUrl", label: "Avatar URL", type: "text" },
+    { key: "avatarUrl", label: "Avatar URL", type: "file", hint: "Upload image or enter URL" },
     { key: "avatarInitial", label: "Avatar initial", type: "text" },
     { key: "email", label: "Email", type: "text" },
     { key: "phone", label: "Phone", type: "text" },
@@ -73,7 +74,7 @@ export const FORM_FIELDS: Partial<Record<SectionId, FieldDef[]>> = {
       type: "stringList",
       hint: "One paragraph per line",
     },
-    { key: "photoUrl", label: "Photo URL", type: "text" },
+    { key: "photoUrl", label: "Photo URL", type: "file", hint: "Upload image or enter URL" },
     { key: "handleBadge", label: "Handle badge", type: "text" },
     {
       key: "funFacts",
@@ -120,8 +121,8 @@ export const FORM_FIELDS: Partial<Record<SectionId, FieldDef[]>> = {
         { key: "href", label: "URL" },
       ],
     },
-    { key: "pdfUrl", label: "PDF URL", type: "text" },
-    { key: "texUrl", label: "TeX URL", type: "text" },
+    { key: "pdfUrl", label: "PDF Resume", type: "file", hint: "Upload .pdf resume or enter URL" },
+    { key: "texUrl", label: "TeX Resume (ATS)", type: "file", hint: "Upload .tex file or enter URL" },
     { key: "latexRepoUrl", label: "LaTeX repo URL", type: "text" },
   ],
   "site-settings": [
@@ -350,7 +351,7 @@ export const FORM_FIELDS: Partial<Record<SectionId, FieldDef[]>> = {
   people: [
     { key: "name", label: "Name", type: "text" },
     { key: "relation", label: "Relation", type: "text" },
-    { key: "imageUrl", label: "Image URL", type: "text" },
+    { key: "imageUrl", label: "Image URL", type: "file", hint: "Upload portrait image or enter URL" },
     {
       key: "bioParagraphs",
       label: "Bio paragraphs",
@@ -389,11 +390,12 @@ export const FORM_FIELDS: Partial<Record<SectionId, FieldDef[]>> = {
       ],
     },
     { key: "href", label: "Href", type: "text" },
-    { key: "downloadUrl", label: "Download URL", type: "text" },
+    { key: "downloadUrl", label: "Download URL", type: "file", hint: "Upload attachment or enter URL" },
     { key: "description", label: "Description", type: "textarea" },
     { key: "sortOrder", label: "Sort order", type: "number" },
     { key: "published", label: "Published", type: "boolean" },
   ],
+
 };
 
 export function stripMeta(data: Record<string, unknown>) {

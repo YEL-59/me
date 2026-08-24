@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef, useState } from "react";
 import IconPicker from "@/components/dashboard/IconPicker";
+import { uploadFile } from "@/lib/dashboard-api";
 import type { FieldDef } from "@/lib/dashboard-forms";
 
 type SectionFormProps = {
@@ -9,13 +11,102 @@ type SectionFormProps = {
   onChange: (next: Record<string, unknown>) => void;
 };
 
-const WIDE_TYPES = new Set(["textarea", "stringList", "objectList", "icon"]);
+const WIDE_TYPES = new Set(["textarea", "stringList", "objectList", "icon", "file"]);
 
 function FieldLabel({ label, hint }: { label: string; hint?: string }) {
   return (
     <div className="mb-1.5">
       <div className="dash-field-label">{label}</div>
       {hint && <p className="dash-field-hint">{hint}</p>}
+    </div>
+  );
+}
+
+function FileUploadField({
+  label,
+  hint,
+  value,
+  onChange,
+  className,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (val: string) => void;
+  className?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const data = await uploadFile(file);
+      onChange(data.url);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  const isPdf = value.toLowerCase().endsWith(".pdf") || value.includes(".pdf");
+  const isImage = /\.(png|jpg|jpeg|webp|svg|gif)($|\?)/i.test(value);
+
+  return (
+    <div className={className}>
+      <FieldLabel label={label} hint={hint} />
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="File URL or upload from device..."
+          className="dash-input flex-1 font-mono text-xs"
+        />
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".pdf,.tex,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp,.svg,.gif,.json"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+          className="dash-btn dash-btn-secondary shrink-0"
+        >
+          {uploading ? "Uploading…" : "📁 Upload File"}
+        </button>
+      </div>
+
+      {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
+
+      {value && (
+        <div className="mt-2 flex items-center gap-3">
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:underline"
+          >
+            {isPdf ? "📄 View PDF" : isImage ? "🖼️ View Image" : "🔗 Open / Test Link"} →
+          </a>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[11px] text-red-400 hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -34,6 +125,20 @@ export default function SectionForm({
       {fields.map((field) => {
         const current = value[field.key];
         const wide = WIDE_TYPES.has(field.type) ? "dash-span-2" : "";
+
+        if (field.type === "file") {
+          return (
+            <FileUploadField
+              key={field.key}
+              label={field.label}
+              hint={field.hint}
+              value={String(current ?? "")}
+              onChange={(next) => setField(field.key, next)}
+              className={wide}
+            />
+          );
+        }
+
 
         if (field.type === "boolean") {
           return (

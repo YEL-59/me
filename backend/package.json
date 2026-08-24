@@ -23,12 +23,14 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.7.4",
+    "multer": "^2.2.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.1.1",
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",

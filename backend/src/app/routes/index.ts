@@ -15,6 +15,7 @@ import { ResumeRoutes } from '../modules/resume/resume.module';
 import { SeedRoutes } from '../modules/seed/seed.route';
 import { PortfolioRoutes } from '../modules/portfolio/portfolio.module';
 import { AnalyticsRoutes } from '../modules/analytics/analytics.module';
+import { UploadRoutes } from '../modules/upload/upload.module';
 
 const router = Router();
 
@@ -35,8 +36,10 @@ const moduleRoutes: { path: string; route: Router }[] = [
   { path: '/people', route: PersonRoutes },
   { path: '/files', route: FileItemRoutes },
   { path: '/seed', route: SeedRoutes },
+  { path: '/upload', route: UploadRoutes },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
 
 export default router;
+
