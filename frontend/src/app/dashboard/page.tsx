@@ -11,7 +11,9 @@ import {
   SectionId,
   getDashboardKey,
   setDashboardKey,
+  clearDashboardKey,
 } from "@/lib/dashboard-api";
+
 import { FORM_FIELDS, stripMeta } from "@/lib/dashboard-forms";
 import { IconView } from "@/lib/icons";
 import "./dashboard.css";
@@ -68,7 +70,9 @@ function itemSubtitle(item: ListItem) {
 export default function DashboardPage() {
   const [active, setActive] = useState<DashView>("visitors");
   const [keyInput, setKeyInput] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [verifying, setVerifying] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -103,7 +107,21 @@ export default function DashboardPage() {
     const existing = getDashboardKey();
     if (existing) {
       setKeyInput(existing);
-      setUnlocked(true);
+      // Validate saved key against backend
+      (async () => {
+        try {
+          await api("/auth/verify", { auth: true });
+          setUnlocked(true);
+        } catch {
+          clearDashboardKey();
+          setUnlocked(false);
+          setKeyInput("");
+        } finally {
+          setVerifying(false);
+        }
+      })();
+    } else {
+      setVerifying(false);
     }
     try {
       const saved = localStorage.getItem(MODE_KEY) as EditMode | null;
@@ -112,6 +130,7 @@ export default function DashboardPage() {
       /* ignore */
     }
   }, []);
+
 
   const setMode = (mode: EditMode) => {
     setError("");
@@ -215,23 +234,47 @@ export default function DashboardPage() {
     if (!isVisitors) void loadSection();
   }, [active, unlocked, isVisitors, loadSection]);
 
-  const unlock = () => {
-    setDashboardKey(keyInput.trim());
-    setUnlocked(true);
-    setMessage("Dashboard unlocked");
+  const unlock = async () => {
+    const code = keyInput.trim();
+    if (!code) {
+      setError("Please enter the dashboard secret passcode.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setMessage("");
+    try {
+      setDashboardKey(code);
+      // Verify key against backend auth route
+      await api("/auth/verify", { auth: true });
+      setUnlocked(true);
+      setMessage("✅ Dashboard unlocked successfully");
+    } catch (err: unknown) {
+      clearDashboardKey();
+      setUnlocked(false);
+      const isAuthErr =
+        err instanceof Error &&
+        (err.message.toLowerCase().includes("unauthorized") ||
+          err.message.toLowerCase().includes("invalid") ||
+          err.message.toLowerCase().includes("failed"));
+      setError(
+        isAuthErr
+          ? "❌ Incorrect passcode. Access denied."
+          : `❌ Connection error: ${err instanceof Error ? err.message : "Request failed"}`,
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const lockDashboard = () => {
-    try {
-      localStorage.removeItem("dashboard_key");
-    } catch {
-      /* ignore */
-    }
+    clearDashboardKey();
     setUnlocked(false);
     setKeyInput("");
     setMessage("");
     setError("");
   };
+
 
   const saveSingleton = async () => {
     if (!section) return;
@@ -393,49 +436,100 @@ export default function DashboardPage() {
       />
     );
 
+  if (verifying && !unlocked) {
+    return (
+      <div className="dash-shell">
+        <div className="dash-lock">
+          <div className="dash-lock-card text-center">
+            <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+              Checking session authorization…
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!unlocked) {
     return (
       <div className="dash-shell">
         <div className="dash-lock">
           <div className="dash-lock-card">
-            <p
-              className="text-[10px] font-semibold tracking-[0.28em] uppercase"
-              style={{ color: "var(--dash-accent)" }}
-            >
-              Portfolio CMS
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🔐</span>
+              <p
+                className="text-[10px] font-semibold tracking-[0.28em] uppercase"
+                style={{ color: "var(--dash-accent)" }}
+              >
+                Protected Admin Panel
+              </p>
+            </div>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight">
-              Dashboard
+              Dashboard Login
             </h1>
             <p
               className="mt-2 text-sm leading-relaxed"
               style={{ color: "var(--text-secondary)" }}
             >
-              Manage projects and content with Form or JSON. Add, edit, update,
-              and delete anytime.
+              Enter your secret admin passcode to manage projects, resume, profile, and site content.
             </p>
-            <label className="mt-6 block">
-              <span className="dash-field-label">Dashboard secret</span>
-              <input
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && unlock()}
-                placeholder="DASHBOARD_SECRET"
-                type="password"
-                className="dash-input mt-1"
-                autoFocus
-              />
-            </label>
-            <button
-              onClick={unlock}
-              disabled={!keyInput.trim()}
-              className="dash-btn dash-btn-primary mt-4 w-full"
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void unlock();
+              }}
+              className="mt-6 space-y-4"
             >
-              Unlock dashboard
-            </button>
+              <div>
+                <label className="dash-field-label">Secret Passcode</label>
+                <div className="relative mt-1">
+                  <input
+                    value={keyInput}
+                    onChange={(e) => {
+                      setKeyInput(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Enter secret passcode..."
+                    type={showPassword ? "text" : "password"}
+                    className="dash-input pr-12"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs opacity-60 hover:opacity-100"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-400">
+                  {error}
+                </div>
+              )}
+
+              {message && (
+                <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-400">
+                  {message}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || !keyInput.trim()}
+                className="dash-btn dash-btn-primary w-full py-2.5"
+              >
+                {loading ? "Verifying…" : "Unlock Dashboard →"}
+              </button>
+            </form>
+
             <Link
               href="/"
-              className="mt-4 block text-center text-xs hover:underline"
+              className="mt-5 block text-center text-xs hover:underline"
               style={{ color: "var(--text-tertiary)" }}
             >
               ← Back to site
@@ -445,6 +539,7 @@ export default function DashboardPage() {
       </div>
     );
   }
+
 
   return (
     <div className="dash-shell">

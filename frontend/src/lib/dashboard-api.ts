@@ -1,20 +1,32 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001/api/v1";
 
 export function getDashboardKey() {
   if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_DASHBOARD_SECRET ?? "";
+    return "";
   }
+
   return (
+    sessionStorage.getItem("dashboard_key") ??
     localStorage.getItem("dashboard_key") ??
-    process.env.NEXT_PUBLIC_DASHBOARD_SECRET ??
     ""
   );
 }
 
 export function setDashboardKey(key: string) {
-  localStorage.setItem("dashboard_key", key);
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("dashboard_key", key);
+    localStorage.setItem("dashboard_key", key);
+  }
 }
+
+export function clearDashboardKey() {
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem("dashboard_key");
+    localStorage.removeItem("dashboard_key");
+  }
+}
+
 
 type ApiOptions = {
   method?: string;
