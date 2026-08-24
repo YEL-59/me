@@ -543,70 +543,49 @@ export default function DashboardPage() {
 
   return (
     <div className="dash-shell">
-      <header className="dash-topbar">
-        <div className="flex min-w-0 items-center gap-3">
-          <div
-            className="grid h-9 w-9 place-items-center rounded-xl text-sm font-bold"
-            style={{
-              background: "var(--dash-accent-soft)",
-              color: "var(--dash-accent)",
-              border: "1px solid var(--dash-accent-border)",
-            }}
-          >
-            CMS
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold tracking-tight">
-              Portfolio Dashboard
-            </p>
-            <p
-              className="truncate text-[11px]"
-              style={{ color: "var(--text-tertiary)" }}
+      {/* Left Sidebar */}
+      <aside className="dash-sidebar scrollbar-thin">
+        <div className="dash-sidebar-header">
+          <div className="flex items-center gap-3">
+            <div
+              className="grid h-9 w-9 place-items-center rounded-xl text-sm font-bold shadow-sm"
+              style={{
+                background: "var(--dash-accent-soft)",
+                color: "var(--dash-accent)",
+                border: "1px solid var(--dash-accent-border)",
+              }}
             >
-              Form + JSON · add · edit · update · delete
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/" className="dash-btn dash-btn-ghost">
-            View site
-          </Link>
-          <Link href="/project-list" className="dash-btn dash-btn-ghost">
-            Project list
-          </Link>
-          <button
-            type="button"
-            onClick={lockDashboard}
-            className="dash-btn dash-btn-ghost"
-          >
-            Lock
-          </button>
-        </div>
-      </header>
-
-      <div className="dash-layout">
-        <aside className="dash-aside scrollbar-thin">
-          <div className="mb-4">
-            <p
-              className="mb-1.5 px-2 text-[10px] font-semibold tracking-[0.18em] uppercase"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              Insights
-            </p>
-            <nav className="space-y-0.5">
-              <button
-                type="button"
-                onClick={() => setActive("visitors")}
-                className={`dash-nav-btn ${
-                  active === "visitors" ? "is-active" : ""
-                }`}
+              CMS
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold tracking-tight">
+                Portfolio Admin
+              </p>
+              <p
+                className="truncate text-[10px]"
+                style={{ color: "var(--text-tertiary)" }}
               >
+                v1.0 · Fullstack Control
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <nav className="dash-sidebar-nav scrollbar-thin">
+          <div className="mb-4">
+            <p className="dash-nav-group-title">Analytics</p>
+            <button
+              type="button"
+              onClick={() => setActive("visitors")}
+              className={`dash-nav-btn ${active === "visitors" ? "is-active" : ""}`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
                 <span className="dash-nav-icon">
-                  <IconView name="FiBarChart2" size={14} />
+                  <IconView name="FiBarChart2" size={15} />
                 </span>
-                <span className="truncate">Visitors</span>
-              </button>
-            </nav>
+                <span className="truncate">Visitor Insights</span>
+              </div>
+            </button>
           </div>
 
           {GROUPS.map((group) => {
@@ -615,121 +594,167 @@ export default function DashboardPage() {
             );
             return (
               <div key={group} className="mb-4 last:mb-0">
-                <p
-                  className="mb-1.5 px-2 text-[10px] font-semibold tracking-[0.18em] uppercase"
-                  style={{ color: "var(--text-tertiary)" }}
-                >
-                  {group}
-                </p>
-                <nav className="space-y-0.5">
+                <p className="dash-nav-group-title">{group}</p>
+                <div className="space-y-1">
                   {groupSections.map((s) => (
                     <button
                       key={s.id}
                       type="button"
                       onClick={() => setActive(s.id)}
-                      className={`dash-nav-btn ${
-                        active === s.id ? "is-active" : ""
-                      }`}
+                      className={`dash-nav-btn ${active === s.id ? "is-active" : ""}`}
                     >
-                      <span className="dash-nav-icon">
-                        <IconView name={SECTION_META[s.id].icon} size={14} />
-                      </span>
-                      <span className="truncate">{s.label}</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="dash-nav-icon">
+                          <IconView name={SECTION_META[s.id].icon} size={15} />
+                        </span>
+                        <span className="truncate">{s.label}</span>
+                      </div>
+                      {s.kind === "list" && active === s.id && items.length > 0 && (
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[9px] font-bold"
+                          style={{
+                            background: "var(--dash-accent-soft)",
+                            color: "var(--dash-accent)",
+                          }}
+                        >
+                          {items.length}
+                        </span>
+                      )}
                     </button>
                   ))}
-                </nav>
+                </div>
               </div>
             );
           })}
+        </nav>
 
-          <button
-            type="button"
-            onClick={seedAll}
-            className="dash-btn dash-btn-warn mt-2 w-full"
-          >
-            Seed all data
-          </button>
-        </aside>
+        <div className="dash-sidebar-footer">
+          <div className="mb-3 flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 font-medium text-emerald-400">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              MongoDB Atlas
+            </span>
+            <button
+              type="button"
+              onClick={seedAll}
+              disabled={loading}
+              className="text-[10px] text-amber-400 hover:underline font-medium"
+            >
+              Seed Data
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="dash-btn dash-btn-secondary flex-1 py-1.5 text-xs text-center"
+            >
+              View Site ↗
+            </Link>
+            <button
+              type="button"
+              onClick={lockDashboard}
+              className="dash-btn dash-btn-danger py-1.5 text-xs px-3"
+              title="Log out and lock dashboard"
+            >
+              Lock
+            </button>
+          </div>
+        </div>
+      </aside>
 
-        <section
-          className={`dash-panel transition-opacity duration-300 ${
-            mounted ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div
-            className="flex flex-wrap items-start justify-between gap-3 border-b pb-4"
-            style={{ borderColor: "var(--border)" }}
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className="grid h-8 w-8 place-items-center rounded-lg text-sm"
-                style={{
-                  background: "var(--dash-accent-soft)",
-                  color: "var(--dash-accent)",
-                }}
-              >
-                <IconView
-                  name={
-                    isVisitors
-                      ? "FiBarChart2"
-                      : SECTION_META[section!.id].icon
-                  }
-                  size={16}
-                />
-              </span>
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">
-                  {isVisitors ? "Visitors" : section!.label}
-                </h2>
-                <p
-                  className="text-[11px]"
-                  style={{ color: "var(--text-tertiary)" }}
-                >
-                  {isVisitors
-                    ? "Daily unique visitors and page views"
-                    : section!.kind === "singleton"
-                      ? "Single document · choose Form or JSON below"
-                      : `${items.length} item${items.length === 1 ? "" : "s"} · full CRUD`}
-                </p>
-              </div>
-            </div>
+      {/* Right Main Content (Full Width) */}
+      <main className="dash-main">
+        <header className="dash-topbar">
+          <div className="flex items-center gap-2 text-xs">
+            <span style={{ color: "var(--text-tertiary)" }}>Dashboard</span>
+            <span style={{ color: "var(--text-tertiary)" }}>/</span>
+            <span className="font-semibold text-amber-400">
+              {isVisitors ? "Visitors Analytics" : section?.label}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
             {!isVisitors && (
               <button
                 type="button"
                 onClick={() => void loadSection(editingId)}
-                className="dash-btn dash-btn-ghost"
+                className="dash-btn dash-btn-ghost text-xs py-1.5"
                 disabled={loading}
               >
-                Refresh
+                🔄 Refresh
               </button>
             )}
+            <Link href="/" target="_blank" className="dash-btn dash-btn-secondary text-xs py-1.5">
+              Live Preview
+            </Link>
+            <button
+              type="button"
+              onClick={lockDashboard}
+              className="dash-btn dash-btn-danger text-xs py-1.5"
+            >
+              🔒 Lock
+            </button>
           </div>
+        </header>
 
-          <div className="mt-4 space-y-2">
-            {message && <p className="dash-alert dash-alert-ok">{message}</p>}
-            {error && <p className="dash-alert dash-alert-err">{error}</p>}
-            {loading && !isVisitors && (
-              <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                Working…
-              </p>
-            )}
-          </div>
-
-          {isVisitors ? (
-            <div className="mt-5">
-              <VisitorsPanel />
+        <div className="dash-content-wrap">
+          <div className="dash-panel">
+            <div
+              className="flex flex-wrap items-center justify-between gap-3 border-b pb-4"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className="grid h-10 w-10 place-items-center rounded-xl text-base shadow-sm"
+                  style={{
+                    background: "var(--dash-accent-soft)",
+                    color: "var(--dash-accent)",
+                    border: "1px solid var(--dash-accent-border)",
+                  }}
+                >
+                  <IconView
+                    name={isVisitors ? "FiBarChart2" : SECTION_META[section!.id].icon}
+                    size={20}
+                  />
+                </span>
+                <div>
+                  <h1 className="text-xl font-bold tracking-tight">
+                    {isVisitors ? "Visitor Insights" : section!.label}
+                  </h1>
+                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {isVisitors
+                      ? "Real-time unique visitors and page hit analytics"
+                      : section!.kind === "singleton"
+                        ? "Single document settings · edit fields or raw JSON below"
+                        : `${items.length} item${items.length === 1 ? "" : "s"} in database · full CRUD management`}
+                  </p>
+                </div>
+              </div>
             </div>
-          ) : (
-            <>
-          {/* Always-visible Form / JSON choice */}
-          <div className="mt-4">{modeTabs}</div>
-          <p
-            className="mt-2 text-[11px]"
-            style={{ color: "var(--text-tertiary)" }}
-          >
-            Showing <strong style={{ color: "var(--dash-accent)" }}>{editMode === "form" ? "Form" : "JSON"}</strong>{" "}
-            editor · your choice is remembered
-          </p>
+
+            <div className="mt-4 space-y-2">
+              {message && <p className="dash-alert dash-alert-ok">{message}</p>}
+              {error && <p className="dash-alert dash-alert-err">{error}</p>}
+              {loading && !isVisitors && (
+                <p className="text-xs text-amber-400">Processing request…</p>
+              )}
+            </div>
+
+            {isVisitors ? (
+              <div className="mt-6">
+                <VisitorsPanel />
+              </div>
+            ) : (
+              <>
+                <div className="mt-5">{modeTabs}</div>
+                <p className="mt-2 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                  Active Mode:{" "}
+                  <strong style={{ color: "var(--dash-accent)" }}>
+                    {editMode === "form" ? "Visual Form" : "Raw JSON"}
+                  </strong>
+                </p>
+
 
           {section!.kind === "singleton" ? (
             <div className="mt-4">
@@ -966,10 +991,13 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-            </>
-          )}
-        </section>
-      </div>
+        </>
+      )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
+
+
