@@ -401,6 +401,20 @@ Backend reads password from **Site Settings → `repoUnlockPassword`** first.
 
 ---
 
+## Visitors analytics
+
+Public pages call `POST /api/v1/analytics/hit` (anonymous visitor id in localStorage).
+
+Dashboard → **Insights → Visitors** shows:
+
+- Today / yesterday unique visitors + page views
+- Last 7 / 30 day list and chart
+- Day boundary: `Asia/Dhaka`
+
+Dashboard traffic (`/dashboard`) is not counted.
+
+---
+
 ## Quick command summary
 
 ```bash

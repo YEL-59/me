@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import CursorSpark from "@/components/CursorSpark";
+import VisitTracker from "@/components/VisitTracker";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { fetchPortfolioBundle } from "@/lib/portfolio-api";
 import "./globals.css";
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body className="min-h-full font-sans">
         <ThemeProvider>
           <CursorSpark />
+          <VisitTracker />
           {children}
         </ThemeProvider>
       </body>

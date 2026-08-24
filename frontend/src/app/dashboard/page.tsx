@@ -1,6 +1,7 @@
 "use client";
 
 import SectionForm from "@/components/dashboard/SectionForm";
+import VisitorsPanel from "@/components/dashboard/VisitorsPanel";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -17,6 +18,7 @@ import "./dashboard.css";
 
 type ListItem = Record<string, unknown> & { _id?: string };
 type EditMode = "form" | "json";
+type DashView = SectionId | "visitors";
 
 const MODE_KEY = "dashboard_edit_mode";
 
@@ -64,7 +66,7 @@ function itemSubtitle(item: ListItem) {
 }
 
 export default function DashboardPage() {
-  const [active, setActive] = useState<SectionId>("projects");
+  const [active, setActive] = useState<DashView>("visitors");
   const [keyInput, setKeyInput] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -78,12 +80,14 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
 
+  const isVisitors = active === "visitors";
+
   const section = useMemo(
-    () => SECTIONS.find((s) => s.id === active)!,
-    [active],
+    () => (isVisitors ? null : SECTIONS.find((s) => s.id === active)!),
+    [active, isVisitors],
   );
 
-  const fields = FORM_FIELDS[section.id] ?? [];
+  const fields = section ? FORM_FIELDS[section.id] ?? [] : [];
 
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -158,15 +162,16 @@ export default function DashboardPage() {
   };
 
   const startCreate = useCallback(() => {
+    if (!section) return;
     setEditingId(null);
     setError("");
     setMessage("Ready to create a new item");
     applyData(EMPTY_TEMPLATES[section.id] ?? {});
-  }, [section.id]);
+  }, [section]);
 
   const loadSection = useCallback(
     async (retainId?: string | null) => {
-      if (!unlocked) return;
+      if (!unlocked || !section) return;
       setLoading(true);
       setError("");
       try {
@@ -207,8 +212,8 @@ export default function DashboardPage() {
     setQuery("");
     setMessage("");
     setError("");
-    void loadSection();
-  }, [section.id, unlocked, loadSection]);
+    if (!isVisitors) void loadSection();
+  }, [active, unlocked, isVisitors, loadSection]);
 
   const unlock = () => {
     setDashboardKey(keyInput.trim());
@@ -229,6 +234,7 @@ export default function DashboardPage() {
   };
 
   const saveSingleton = async () => {
+    if (!section) return;
     setLoading(true);
     setError("");
     try {
@@ -247,6 +253,7 @@ export default function DashboardPage() {
   };
 
   const saveItem = async () => {
+    if (!section) return;
     setLoading(true);
     setError("");
     try {
@@ -298,6 +305,7 @@ export default function DashboardPage() {
   };
 
   const deleteItem = async (id: string, title?: string) => {
+    if (!section) return;
     if (!confirm(`Delete “${title || "this item"}”? This cannot be undone.`))
       return;
     setLoading(true);
@@ -483,6 +491,29 @@ export default function DashboardPage() {
 
       <div className="dash-layout">
         <aside className="dash-aside scrollbar-thin">
+          <div className="mb-4">
+            <p
+              className="mb-1.5 px-2 text-[10px] font-semibold tracking-[0.18em] uppercase"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              Insights
+            </p>
+            <nav className="space-y-0.5">
+              <button
+                type="button"
+                onClick={() => setActive("visitors")}
+                className={`dash-nav-btn ${
+                  active === "visitors" ? "is-active" : ""
+                }`}
+              >
+                <span className="dash-nav-icon">
+                  <IconView name="FiBarChart2" size={14} />
+                </span>
+                <span className="truncate">Visitors</span>
+              </button>
+            </nav>
+          </div>
+
           {GROUPS.map((group) => {
             const groupSections = SECTIONS.filter(
               (s) => SECTION_META[s.id].group === group,
@@ -542,42 +573,59 @@ export default function DashboardPage() {
                   color: "var(--dash-accent)",
                 }}
               >
-                <IconView name={SECTION_META[section.id].icon} size={16} />
+                <IconView
+                  name={
+                    isVisitors
+                      ? "FiBarChart2"
+                      : SECTION_META[section!.id].icon
+                  }
+                  size={16}
+                />
               </span>
               <div>
                 <h2 className="text-lg font-semibold tracking-tight">
-                  {section.label}
+                  {isVisitors ? "Visitors" : section!.label}
                 </h2>
                 <p
                   className="text-[11px]"
                   style={{ color: "var(--text-tertiary)" }}
                 >
-                  {section.kind === "singleton"
-                    ? "Single document · choose Form or JSON below"
-                    : `${items.length} item${items.length === 1 ? "" : "s"} · full CRUD`}
+                  {isVisitors
+                    ? "Daily unique visitors and page views"
+                    : section!.kind === "singleton"
+                      ? "Single document · choose Form or JSON below"
+                      : `${items.length} item${items.length === 1 ? "" : "s"} · full CRUD`}
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => void loadSection(editingId)}
-              className="dash-btn dash-btn-ghost"
-              disabled={loading}
-            >
-              Refresh
-            </button>
+            {!isVisitors && (
+              <button
+                type="button"
+                onClick={() => void loadSection(editingId)}
+                className="dash-btn dash-btn-ghost"
+                disabled={loading}
+              >
+                Refresh
+              </button>
+            )}
           </div>
 
           <div className="mt-4 space-y-2">
             {message && <p className="dash-alert dash-alert-ok">{message}</p>}
             {error && <p className="dash-alert dash-alert-err">{error}</p>}
-            {loading && (
+            {loading && !isVisitors && (
               <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                 Working…
               </p>
             )}
           </div>
 
+          {isVisitors ? (
+            <div className="mt-5">
+              <VisitorsPanel />
+            </div>
+          ) : (
+            <>
           {/* Always-visible Form / JSON choice */}
           <div className="mt-4">{modeTabs}</div>
           <p
@@ -588,7 +636,7 @@ export default function DashboardPage() {
             editor · your choice is remembered
           </p>
 
-          {section.kind === "singleton" ? (
+          {section!.kind === "singleton" ? (
             <div className="mt-4">
               <div className="dash-editor-pane">{editorBody}</div>
               <div className="dash-savebar">
@@ -604,7 +652,7 @@ export default function DashboardPage() {
                   disabled={loading}
                   className="dash-btn dash-btn-primary"
                 >
-                  Save / Update {section.label}
+                  Save / Update {section?.label ?? "Section"}
                 </button>
               </div>
             </div>
@@ -621,9 +669,9 @@ export default function DashboardPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => void loadSection(editingId)}
-                    className="dash-btn dash-btn-ghost"
+                    onClick={() => void loadSection()}
                     disabled={loading}
+                    className="dash-btn dash-btn-secondary"
                   >
                     Reload list
                   </button>
@@ -632,7 +680,7 @@ export default function DashboardPage() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={`Search ${section.label.toLowerCase()}…`}
+                  placeholder={`Search ${section?.label?.toLowerCase() ?? "items"}…`}
                   className="dash-input mb-3"
                 />
 
@@ -822,6 +870,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+          )}
+            </>
           )}
         </section>
       </div>

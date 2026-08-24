@@ -14,12 +14,14 @@ import { SiteSettingsRoutes } from '../modules/siteSettings/siteSettings.module'
 import { ResumeRoutes } from '../modules/resume/resume.module';
 import { SeedRoutes } from '../modules/seed/seed.route';
 import { PortfolioRoutes } from '../modules/portfolio/portfolio.module';
+import { AnalyticsRoutes } from '../modules/analytics/analytics.module';
 
 const router = Router();
 
 const moduleRoutes: { path: string; route: Router }[] = [
   { path: '/users', route: UserRoutes },
   { path: '/portfolio', route: PortfolioRoutes },
+  { path: '/analytics', route: AnalyticsRoutes },
   { path: '/profile', route: ProfileRoutes },
   { path: '/about', route: AboutRoutes },
   { path: '/resume', route: ResumeRoutes },
