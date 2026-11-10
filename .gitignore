@@ -2,8 +2,6 @@
 node_modules/
 
 # env / secrets
-.env
-.env.*
 !.env.example
 
 # builds
@@ -23,7 +21,7 @@ Thumbs.db
 # editors / vercel
 .vercel
 .idea/
-.vscode/
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
+config.bat
